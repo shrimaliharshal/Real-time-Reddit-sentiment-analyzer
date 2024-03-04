@@ -15,6 +15,7 @@ from pyspark.sql.functions import lit
 from functools import reduce
 from pyspark.sql import DataFrame
 from kafka import KafkaProducer
+import creds
 
 def read_data_from_kafka(topic_name, bootstrap_servers='localhost:9092', group_id='my-group', timeout=600, max_messages=100):
     """
@@ -91,9 +92,9 @@ def read_data_from_kafka(topic_name, bootstrap_servers='localhost:9092', group_i
     return posts_df
 
 
-reddit = praw.Reddit(client_id='R2hyuU2V_wnLGBZyFEVLtw',
-                     client_secret='ayv3CTLaTdIot3qpXqqoGCrQq8KM3A',
-                     user_agent='web bot')
+reddit = praw.Reddit(client_id=creds.CLIENT_ID,
+                     client_secret= creds.CLIENT_SECRET,
+                     user_agent=creds.USER_AGENT)
 
 
 
