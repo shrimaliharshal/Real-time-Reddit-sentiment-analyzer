@@ -15,6 +15,7 @@ from pyspark.sql.functions import lit
 from functools import reduce
 from pyspark.sql import DataFrame
 from kafka import KafkaProducer
+import creds
 
 def read_data_from_kafka(topic_name, bootstrap_servers='localhost:9092', group_id='my-group', timeout=600, max_messages=100):
     """
@@ -57,43 +58,12 @@ def read_data_from_kafka(topic_name, bootstrap_servers='localhost:9092', group_i
     
     return posts_df
 
-def read_data_from_kafka(topic_name, bootstrap_servers='localhost:9092', group_id='my-group', timeout=60, max_messages=100):
-    consumer = KafkaConsumer(
-        topic_name,
-        bootstrap_servers=bootstrap_servers,
-        value_deserializer=lambda m: json.loads(m.decode('utf-8')),
-        group_id=group_id
-    )
-    
-    posts_data = []
-    start_time = time.time()
-    while time.time() - start_time < timeout:
-        messages = consumer.poll(timeout_ms=1000, max_records=max_messages)
-        if not messages:
-            print("No messages received.")
-            break
-        for tp, msgs in messages.items():
-            for msg in msgs:
-                post_data = msg.value
-                print(f"Received message: {post_data}")
-                posts_data.append(post_data)
-                if len(posts_data) >= max_messages:
-                    break
-        if len(posts_data) >= max_messages:
-            break
-    
-    # Print the list of dictionaries to ensure it's being populated correctly
-    print("Posts data:", posts_data)
-    
-    # Convert the list of dictionaries to a Pandas DataFrame
-    posts_df = pd.DataFrame(posts_data)
-    consumer.close()
-    return posts_df
 
 
-reddit = praw.Reddit(client_id='R2hyuU2V_wnLGBZyFEVLtw',
-                     client_secret='ayv3CTLaTdIot3qpXqqoGCrQq8KM3A',
-                     user_agent='web bot')
+
+reddit = praw.Reddit(client_id=creds.CLIENT_ID,
+                     client_secret= creds.CLIENT_SECRET,
+                     user_agent=creds.USER_AGENT)
 
 
 

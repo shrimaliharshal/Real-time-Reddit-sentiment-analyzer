@@ -68,11 +68,10 @@ def analyze_keyword(keywordforscraping):
         posts_df['selftext'] = posts_df['selftext'].apply(clean_text)
 
         # Convert to Spark DataFrame, preprocess, analyze sentiment, etc.
-        # Example:
         spark_df = spark.createDataFrame(posts_df)
         print(f"Converted to Spark DataFrame for keyword: {keywordforscraping}, Number of posts: {spark_df.count()}")
 
-        # Assume you have the rest of your pipeline here
+        
         # Rename column for sentiment analysis
         prepared_df = spark_df.withColumnRenamed("selftext", "text")
 
@@ -82,25 +81,25 @@ def analyze_keyword(keywordforscraping):
 
           # Extract sentiment and sentiment score from the first pipeline's results
         test1 = result_df1.withColumn("sentiment1", expr("sentiment.result[0]"))
-        # Assuming a way to calculate sentiment score1, as Spark NLP's output format varies
+        
 
         # Extract sentiment and sentiment score from the second pipeline's results
         test2 = result_df2.withColumn("sentiment2", expr("sentiment.result[0]"))
-        # Assuming a way to calculate sentiment score2
+        
         # Join the original DataFrame with the first pipeline's results
         combined_df = spark_df.join(test1.select("title", "sentiment1"), "title")
 
         # Join the combined DataFrame with the second pipeline's results
         final_df = combined_df.join(test2.select("title", "sentiment2"), "title")
         final_df = final_df.withColumn("keyword", lit(keywordforscraping))
-        # Your existing code to scrape, process, and analyze sentiment...
+        
         print(f"Processing keyword: {keywordforscraping}")
-        # Assuming the final DataFrame for this keyword is named `result_df`
+       
         print(f"Number of posts for {keywordforscraping}: {final_df.count()}")
 
         final_df.show(5)
         print(f"Completed processing for keyword: {keywordforscraping}")
-        return final_df  # Or your final DataFrame for this keyword
+        return final_df 
 
     except Exception as e:
         print(f"Error processing keyword {keywordforscraping}: {e}")
